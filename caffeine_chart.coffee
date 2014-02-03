@@ -1,11 +1,6 @@
-#data = caffeineModel(doses)
-
-$( document ).ready( -> 
-  full_width = $( window ).height()
-  full_height = $( window ).width()
-  renderGraph(full_width,full_height))
-
 renderGraph: (full_width,full_height) ->
+  #data = caffeineModel(doses)
+
   margin = {top:30, bottom: 30, left:30, right:30}
   width = full_width - margin.left - margin.right
   height = full_height - margin.top - margin.bottom
@@ -57,3 +52,10 @@ caffeineModel: (doses) ->
 
   # dC/dt = -a*C
   # dB/dt = a*C - tau*B
+
+
+$( document ).ready( -> 
+  full_width = $( window ).height()
+  full_height = $( window ).width()
+  renderGraph(full_width,full_height))
+
