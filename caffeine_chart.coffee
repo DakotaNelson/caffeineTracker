@@ -1,4 +1,4 @@
-renderGraph: (full_width,full_height) ->
+@renderGraph: (full_width,full_height) =>
   #data = caffeineModel(doses)
 
   margin = {top:30, bottom: 30, left:30, right:30}
@@ -39,7 +39,7 @@ renderGraph: (full_width,full_height) ->
                      .y( (d) -> return d)
                      .interpolate("linear")
 
-caffeineModel: (doses) ->
+@caffeineModel: (doses) ->
   # Doses: array of tuples.
   #   [0] -> Time of dose
   #   [1] -> Dosage in mg
@@ -54,8 +54,8 @@ caffeineModel: (doses) ->
   # dB/dt = a*C - tau*B
 
 
-$( document ).ready( -> 
+$( document ).ready( => 
   full_width = $( window ).height()
   full_height = $( window ).width()
-  renderGraph(full_width,full_height))
+  @renderGraph(full_width,full_height))
 
