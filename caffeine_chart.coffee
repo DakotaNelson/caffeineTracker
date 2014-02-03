@@ -14,6 +14,11 @@ outer_wrap = d3.select(".chart")
 inner_wrap = outer_wrap.append("g")
                        .attr("transform","translate(#{margin.left},#{margin.top})")
 
+background = inner_wrap.append("rect")
+                       .attr("width","100%")
+                       .attr("height","100%")
+                       .attr("fill","red")
+
 x = d3.time.scale()
            .domain()
            .range()
