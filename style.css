@@ -8,3 +8,8 @@ body {
   stroke: black;
   shape-rendering: crispEdges;
 }
+
+.line {
+  fill: none;
+  stroke: black;
+}

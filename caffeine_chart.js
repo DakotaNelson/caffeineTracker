@@ -9,9 +9,10 @@
     }
 
     caffeineChart.prototype.renderGraph = function(full_width, full_height) {
-      var alldata, data, data_line, data_points, doses, height, inner_wrap, line_function, margin, outer_wrap, times, width, x, xAxis, xAxis_handle, y, yAxis, yAxis_handle;
-      doses = 0;
-      data = this.caffeineModel(doses);
+      var alldata, blood_line, blood_line_function, data, doses, height, inner_wrap, margin, outer_wrap, times, unabsorbed_line, unabsorbed_line_function, weight, width, x, xAxis, xAxis_handle, y, yAxis, yAxis_handle;
+      doses = [[0, 0], [1, 20], [3, 10]];
+      weight = 70;
+      data = this.caffeineModel(doses, weight);
       times = [];
       _.each(data, function(e) {
         return times.push(e[0]);
@@ -37,26 +38,36 @@
       yAxis = d3.svg.axis().scale(y).orient('left');
       xAxis_handle = inner_wrap.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
       yAxis_handle = inner_wrap.append("g").attr("class", "axis").call(yAxis);
-      line_function = d3.svg.line().x(function(d) {
+      blood_line_function = d3.svg.line().x(function(d) {
         return x(d[0]);
       }).y(function(d) {
         return y(d[1]);
       });
-      data_line = inner_wrap.append("g").append("path").datum(data).attr("class", "line").attr("fill", "none").attr("stroke", "black").attr("d", line_function(data));
-      console.log(data);
-      return data_points = inner_wrap.append('g').selectAll('circle').data(data).enter().append("circle").attr("cx", function(d) {
+      unabsorbed_line_function = d3.svg.line().x(function(d) {
         return x(d[0]);
-      }).attr("cy", function(d) {
-        return y(d[1]);
-      }).attr("r", 4);
+      }).y(function(d) {
+        return y(d[2]);
+      });
+      blood_line = inner_wrap.append("g").append("path").datum(data).attr("class", "line").attr("d", blood_line_function(data));
+      return unabsorbed_line = inner_wrap.append("g").append("path").datum(data).attr("class", "line").attr("d", unabsorbed_line_function(data));
+      /*data_points = inner_wrap.append('g').selectAll('circle')
+                               .data(data)
+                            .enter()
+                               .append("circle")
+                               .attr("cx", (d) -> x(d[0]))
+                               .attr("cy", (d) -> y(d[1]))
+                               .attr("r",4)
+                               .append("circle")
+                               .attr("cx", (d) -> x(d[0]))
+                               .attr("cy", (d) -> y(d[1]))
+                               .attr("r",4)
+      */
+
     };
 
-    caffeineChart.prototype.caffeineModel = function(doses) {
-      var caffeineSystem, concentrations, endt, init_b, init_c, maxiters, retdata, sol, times;
-      maxiters = 2000;
-      endt = 4 * 60 * 60;
-      init_b = 1;
-      init_c = 50;
+    caffeineChart.prototype.caffeineModel = function(doses, weight) {
+      var caffeineSystem, data, initial_conditions, maxiters, startt;
+      maxiters = 100000;
       caffeineSystem = function(t, concs) {
         var a, b_conc, c_conc, tau;
         tau = 1 / 5;
@@ -65,14 +76,31 @@
         c_conc = concs[1];
         return [a * c_conc - tau * b_conc, -a * c_conc];
       };
-      sol = numeric.dopri(0, endt, [init_b, init_c], caffeineSystem, 1e-6, maxiters);
-      times = _.range(0, endt, endt / 20);
-      concentrations = sol.at(times);
-      retdata = [];
-      _.each(times, function(e, i) {
-        return retdata.push([e, concentrations[i][0], concentrations[i][1]]);
+      if (doses.length < 1) {
+        doses = [[0, 0]];
+      }
+      data = [];
+      initial_conditions = [0, 0];
+      startt = 0;
+      _.each(doses, function(dose, num) {
+        var concentrations, endt, init_b, init_c, sol, times;
+        if ((num + 2) <= doses.length) {
+          endt = doses[num + 1][0];
+        } else {
+          endt = 24;
+        }
+        init_b = initial_conditions[0];
+        init_c = initial_conditions[1] + (dose[1] / weight);
+        sol = numeric.dopri(startt, endt, [init_b, init_c], caffeineSystem, 1e-6, maxiters);
+        times = _.range(startt, endt, endt / 2000);
+        concentrations = sol.at(times);
+        initial_conditions = concentrations[concentrations.length - 1];
+        startt = endt;
+        return _.each(times, function(e, i) {
+          return data.push([e, concentrations[i][0], concentrations[i][1]]);
+        });
       });
-      return retdata;
+      return data;
     };
 
     return caffeineChart;
