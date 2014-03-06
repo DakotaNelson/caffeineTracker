@@ -1,0 +1,10 @@
+body {
+  background-color:steelBlue;
+  //background-image:url("file.jpg");
+}
+
+.axis {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}

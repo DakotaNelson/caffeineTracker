@@ -12,7 +12,7 @@ class caffeineChart
       alldata.push(e[1])
       alldata.push(e[2]))
 
-    margin = {top:20, bottom: 40, left:10, right:20}
+    margin = {top:20, bottom: 60, left:80, right:40}
     width = full_width - margin.left - margin.right
     height = full_height - margin.top - margin.bottom
 
@@ -21,7 +21,7 @@ class caffeineChart
                    .attr("height",full_height)
 
     inner_wrap = outer_wrap.append("g")
-                           .attr("transform","translate(#{margin.left},#{margin.top})")
+                           .attr("transform","translate("+margin.left+","+margin.top+")")
 
     #x = d3.time.scale()
     x = d3.scale.linear()
@@ -35,16 +35,20 @@ class caffeineChart
     xAxis = d3.svg.axis()
                   .scale(x)
                   .orient('bottom')
-                  .ticks()
+                  #.ticks()
 
     yAxis = d3.svg.axis()
                   .scale(y)
                   .orient('left')
 
-    #xAxis_handle = inner_wrap.append("g")
-              #.attr("class","axis")
-              #.attr("transform","translate(0," + height + ")")
-              #.call(xAxis)
+    xAxis_handle = inner_wrap.append("g")
+              .attr("class","axis")
+              .attr("transform","translate(0," + height + ")")
+              .call(xAxis)
+
+    yAxis_handle = inner_wrap.append("g")
+                             .attr("class","axis")
+                             .call(yAxis)
 
     line_function = d3.svg.line()
                     .x( (d) -> return x(d[0]) )
@@ -81,7 +85,7 @@ class caffeineChart
     endt = 4 * 60 * 60 # end time, in seconds
 
     init_b = 1
-    init_c = 100
+    init_c = 50
 
     caffeineSystem = (t,concs) ->
       tau = 1/5

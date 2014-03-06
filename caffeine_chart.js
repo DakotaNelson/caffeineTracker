@@ -9,7 +9,7 @@
     }
 
     caffeineChart.prototype.renderGraph = function(full_width, full_height) {
-      var alldata, data, data_line, data_points, doses, height, inner_wrap, line_function, margin, outer_wrap, times, width, x, xAxis, y, yAxis;
+      var alldata, data, data_line, data_points, doses, height, inner_wrap, line_function, margin, outer_wrap, times, width, x, xAxis, xAxis_handle, y, yAxis, yAxis_handle;
       doses = 0;
       data = this.caffeineModel(doses);
       times = [];
@@ -23,9 +23,9 @@
       });
       margin = {
         top: 20,
-        bottom: 40,
-        left: 10,
-        right: 20
+        bottom: 60,
+        left: 80,
+        right: 40
       };
       width = full_width - margin.left - margin.right;
       height = full_height - margin.top - margin.bottom;
@@ -33,8 +33,10 @@
       inner_wrap = outer_wrap.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       x = d3.scale.linear().domain([_.min(times), _.max(times)]).range([0, width]);
       y = d3.scale.linear().domain([0, _.max(alldata)]).range([height, 0]);
-      xAxis = d3.svg.axis().scale(x).orient('bottom').ticks();
+      xAxis = d3.svg.axis().scale(x).orient('bottom');
       yAxis = d3.svg.axis().scale(y).orient('left');
+      xAxis_handle = inner_wrap.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+      yAxis_handle = inner_wrap.append("g").attr("class", "axis").call(yAxis);
       line_function = d3.svg.line().x(function(d) {
         return x(d[0]);
       }).y(function(d) {
@@ -54,7 +56,7 @@
       maxiters = 2000;
       endt = 4 * 60 * 60;
       init_b = 1;
-      init_c = 100;
+      init_c = 50;
       caffeineSystem = function(t, concs) {
         var a, b_conc, c_conc, tau;
         tau = 1 / 5;
